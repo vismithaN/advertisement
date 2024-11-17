@@ -7,6 +7,7 @@ import org.apache.samza.test.framework.TestRunner;
 import org.apache.samza.test.framework.system.descriptors.InMemoryInputDescriptor;
 import org.apache.samza.test.framework.system.descriptors.InMemoryOutputDescriptor;
 import org.apache.samza.test.framework.system.descriptors.InMemorySystemDescriptor;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -18,6 +19,7 @@ import java.util.Map;
 public class TestAdMatchTask {
     @Test
     public void testAdMatchTask() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
         Map<String, String> confMap = new HashMap<>();
         confMap.put("stores.user-info.factory", "org.apache.samza.storage.kv.RocksDbKeyValueStorageEngineFactory");
         confMap.put("stores.user-info.key.serde", "integer");
@@ -46,14 +48,15 @@ public class TestAdMatchTask {
 //        Assert.assertEquals(5, TestRunner.consumeStream(outputAdStream, Duration.ofSeconds(7)).get(0).size());
 
         ListIterator<Object> resultIter = TestRunner.consumeStream(outputAdStream, Duration.ofSeconds(7)).get(0).listIterator();
+        String baseScoreTest = "{\"userId\":0,\"name\":\"Cloud Bakery\",\"storeId\":\"H4jJ7XB3CetIr1pg56CczQ\"}";
+//        Map<String, Object> baseScoreTest = (Map<String, Object>) resultIter.next();
+        Assert.assertEquals(mapper.readTree(baseScoreTest), resultIter.next());
 
-        Map<String, Object> baseScoreTest = (Map<String, Object>) resultIter.next();
-        Assert.assertTrue(baseScoreTest.get("userId").toString().equals("0")
-                && baseScoreTest.get("name").toString().equals("Cloud Bakery"));
-
-        Map<String, Object> interestTest = (Map<String, Object>) resultIter.next();
-        Assert.assertTrue(interestTest.get("userId").toString().equals("1")
-                && interestTest.get("name").toString().equals("Cloud Ramen"));
+        String interestTest = "{\"userId\":1,\"name\":\"Cloud Ramen\",\"storeId\":\"MJJi_5tGkWYI1VReTjhCCA\"}";
+//        Map<String, Object> interestTest = (Map<String, Object>) resultIter.next();
+//        Assert.assertTrue(interestTest.get("userId").toString().equals("1")
+//                && interestTest.get("name").toString().equals("Cloud Ramen"));
+        Assert.assertEquals(mapper.readTree(interestTest), resultIter.next());
 
         Map<String, Object> affordTest = (Map<String, Object>) resultIter.next();
         Assert.assertTrue(affordTest.get("userId").toString().equals("2")
