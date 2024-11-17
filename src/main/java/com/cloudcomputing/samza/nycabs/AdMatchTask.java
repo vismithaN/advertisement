@@ -181,7 +181,7 @@ public class AdMatchTask implements StreamTask, InitableTask {
         String userInterest = (String) user.get("interest");
         String device = (String) user.get("device");
 
-        System.out.println("UserTags " + userTags);
+        System.out.println("UserTags " + user.get("tags"));
 
 
         KeyValueIterator<String,Map<String,Object>> iterator = yelpInfo.all();
