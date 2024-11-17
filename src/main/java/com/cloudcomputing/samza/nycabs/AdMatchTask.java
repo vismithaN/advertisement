@@ -170,7 +170,7 @@ public class AdMatchTask implements StreamTask, InitableTask {
     }
 
     private void handleRideRequest(Map<String, Object> event, MessageCollector collector) throws IOException {
-        int userId = (Integer) event.get("userId");
+        int userId = (Integer) event.get("clientId");
         Map<String, Object> user = userInfo.get(userId);
 
         if (user == null) return;
