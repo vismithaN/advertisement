@@ -185,7 +185,7 @@ public class AdMatchTask implements StreamTask, InitableTask {
         double maxScore = Double.MIN_VALUE;
         Map<String, Object> bestMatch = null;
 
-        Set<String> userTags = (Set<String>) user.get("tags");
+        Set<String> userTags = tagsConversion(user);
         String userInterest = (String) user.get("interest");
         String device = (String) user.get("device");
 
@@ -231,6 +231,21 @@ public class AdMatchTask implements StreamTask, InitableTask {
                     mapper.readTree(mapper.writeValueAsString(output))));
         }
 
+    }
+
+    private Set<String> tagsConversion(Map<String, Object> user) {
+        Set<String> userTags;
+        Object tagsObject = user.get("tags");
+
+        if (tagsObject instanceof List) {
+            // Convert to Set if stored as a List
+            userTags = new HashSet<>((List<String>) tagsObject);
+        } else if (tagsObject instanceof Set) {
+            userTags = (Set<String>) tagsObject;
+        } else {
+            throw new IllegalStateException("Unexpected type for tags field: " + tagsObject.getClass());
+        }
+        return userTags;
     }
 
     private double distanceAgeMatch(Map<String, Object> store, Map<String, Object> user,
