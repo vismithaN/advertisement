@@ -48,27 +48,21 @@ public class TestAdMatchTask {
         Assert.assertEquals(5, TestRunner.consumeStream(outputAdStream, Duration.ofSeconds(7)).get(0).size());
 
         ListIterator<Object> resultIter = TestRunner.consumeStream(outputAdStream, Duration.ofSeconds(7)).get(0).listIterator();
+
         String baseScoreTest = "{\"userId\":0,\"name\":\"Cloud Bakery\",\"storeId\":\"H4jJ7XB3CetIr1pg56CczQ\"}";
-//        Map<String, Object> baseScoreTest = (Map<String, Object>) resultIter.next();
         Assert.assertEquals(mapper.readTree(baseScoreTest), resultIter.next());
 
         String interestTest = "{\"userId\":1,\"name\":\"Cloud Ramen\",\"storeId\":\"MJJi_5tGkWYI1VReTjhCCA\"}";
-//        Map<String, Object> interestTest = (Map<String, Object>) resultIter.next();
-//        Assert.assertTrue(interestTest.get("userId").toString().equals("1")
-//                && interestTest.get("name").toString().equals("Cloud Ramen"));
         Assert.assertEquals(mapper.readTree(interestTest), resultIter.next());
 
-        Map<String, Object> affordTest = (Map<String, Object>) resultIter.next();
-        Assert.assertTrue(affordTest.get("userId").toString().equals("2")
-                && affordTest.get("name").toString().equals("Luxury Cloud Bakery"));
+        String affordTest = "{\"userId\":2,\"name\":\"Luxury Cloud Bakery\",\"storeId\":\"H4jJ7XB3CetIr1pg56Cczx\"}";
+        Assert.assertEquals(mapper.readTree(affordTest), resultIter.next());
 
-        Map<String, Object> updateStatusTest = (Map<String, Object>) resultIter.next();
-        Assert.assertTrue(updateStatusTest.get("userId").toString().equals("3")
-                && updateStatusTest.get("name").toString().equals("Cloud Cafe"));
+        String updateStatusTest = "{\"userId\":3,\"name\":\"Cloud Cafe\",\"storeId\":\"MJJi_5tGkWYI1VReTjhCsx\"}";
+        Assert.assertEquals(mapper.readTree(updateStatusTest), resultIter.next());
 
-        Map<String, Object> ageTest = (Map<String, Object>) resultIter.next();
-        Assert.assertTrue(ageTest.get("userId").toString().equals("4")
-                && ageTest.get("name").toString().equals("Cloud Bakery II"));
+        String ageTest = "{\"userId\":4,\"name\":\"Cloud Bakery II\",\"storeId\":\"H4jJ7XB3CetIr1pg56Cczz\"}";
+        Assert.assertEquals(mapper.readTree(ageTest), resultIter.next());
     }
 
     private static double distance(double lat1, double lon1, double lat2, double lon2) {
