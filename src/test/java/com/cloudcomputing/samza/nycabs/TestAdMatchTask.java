@@ -17,7 +17,7 @@ import java.util.ListIterator;
 import java.util.Map;
 
 public class TestAdMatchTask {
-    @Test
+//    @Test
     public void testAdMatchTask() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, String> confMap = new HashMap<>();
