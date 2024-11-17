@@ -120,7 +120,7 @@ public class AdMatchTask implements StreamTask, InitableTask {
                 mapResult.put("blood_sugar", -1);
                 mapResult.put("stress", -1);
                 mapResult.put("active", -1);
-                mapResult.put("tags", -1);
+                mapResult.put("tags", new HashSet<>());
 
                 int userId = (Integer) mapResult.get("userId");
                 userInfo.put(userId, mapResult);
