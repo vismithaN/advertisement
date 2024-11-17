@@ -17,7 +17,7 @@ import java.util.ListIterator;
 import java.util.Map;
 
 public class TestAdMatchTask {
-//    @Test
+    @Test
     public void testAdMatchTask() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, String> confMap = new HashMap<>();
@@ -45,7 +45,7 @@ public class TestAdMatchTask {
                 .addConfig("deploy.test", "true")
                 .run(Duration.ofSeconds(7));
 
-//        Assert.assertEquals(5, TestRunner.consumeStream(outputAdStream, Duration.ofSeconds(7)).get(0).size());
+        Assert.assertEquals(5, TestRunner.consumeStream(outputAdStream, Duration.ofSeconds(7)).get(0).size());
 
         ListIterator<Object> resultIter = TestRunner.consumeStream(outputAdStream, Duration.ofSeconds(7)).get(0).listIterator();
         String baseScoreTest = "{\"userId\":0,\"name\":\"Cloud Bakery\",\"storeId\":\"H4jJ7XB3CetIr1pg56CczQ\"}";

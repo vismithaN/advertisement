@@ -115,12 +115,12 @@ public class AdMatchTask implements StreamTask, InitableTask {
             ObjectMapper mapper = new ObjectMapper();
             try {
                 mapResult = mapper.readValue(rawString, HashMap.class);
-                mapResult.put("interest", StringUtils.EMPTY);
-                mapResult.put("mood", -1);
-                mapResult.put("blood_sugar", -1);
-                mapResult.put("stress", -1);
-                mapResult.put("active", -1);
-                mapResult.put("tags", new HashSet<>());
+//                mapResult.put("interest", StringUtils.EMPTY);
+//                mapResult.put("mood", -1);
+//                mapResult.put("blood_sugar", -1);
+//                mapResult.put("stress", -1);
+//                mapResult.put("active", -1);
+                mapResult.put("tags", getUserTag(mapResult));
 
                 int userId = (Integer) mapResult.get("userId");
                 userInfo.put(userId, mapResult);
