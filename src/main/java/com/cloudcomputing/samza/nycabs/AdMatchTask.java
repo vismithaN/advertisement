@@ -1,6 +1,7 @@
 package com.cloudcomputing.samza.nycabs;
 
 import com.google.common.io.Resources;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.samza.context.Context;
 import org.apache.samza.storage.kv.KeyValueIterator;
 import org.apache.samza.storage.kv.KeyValueStore;
@@ -114,6 +115,13 @@ public class AdMatchTask implements StreamTask, InitableTask {
             ObjectMapper mapper = new ObjectMapper();
             try {
                 mapResult = mapper.readValue(rawString, HashMap.class);
+                mapResult.put("interest", StringUtils.EMPTY);
+                mapResult.put("mood", -1);
+                mapResult.put("blood_sugar", -1);
+                mapResult.put("stress", -1);
+                mapResult.put("active", -1);
+                mapResult.put("tags", -1);
+
                 int userId = (Integer) mapResult.get("userId");
                 userInfo.put(userId, mapResult);
             } catch (Exception e) {
@@ -182,7 +190,6 @@ public class AdMatchTask implements StreamTask, InitableTask {
         String device = (String) user.get("device");
 
         System.out.println("UserTags " + user.get("tags"));
-
 
         KeyValueIterator<String,Map<String,Object>> iterator = yelpInfo.all();
 
@@ -329,7 +336,7 @@ public class AdMatchTask implements StreamTask, InitableTask {
         if (active == 3) tags.add("willingTour");
         if (stress > 5 || active == 1 || mood < 4) tags.add("stressRelease");
         if (mood > 6) tags.add("happyChoice");
-        if(tags.isEmpty()) tags.add("others");
+        if (tags.isEmpty()) tags.add("others");
 
         return tags;
     }
