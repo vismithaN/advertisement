@@ -13,6 +13,7 @@ import org.apache.samza.task.TaskCoordinator;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +39,8 @@ public class AdMatchTask implements StreamTask, InitableTask {
     private KeyValueStore<String, Map<String, Object>> yelpInfo;
 
     private final static Integer DURATION_MILLI = 5 * 60 * 1000;
+
+    private final  ObjectMapper mapper = new ObjectMapper();
 
     private Set<String> lowCalories;
 
@@ -141,7 +144,7 @@ public class AdMatchTask implements StreamTask, InitableTask {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void process(IncomingMessageEnvelope envelope, MessageCollector collector, TaskCoordinator coordinator) {
+    public void process(IncomingMessageEnvelope envelope, MessageCollector collector, TaskCoordinator coordinator) throws Exception {
         /*
         All the messsages are partitioned by blockId, which means the messages
         sharing the same blockId will arrive at the same task, similar to the
@@ -166,7 +169,7 @@ public class AdMatchTask implements StreamTask, InitableTask {
         }
     }
 
-    private void handleRideRequest(Map<String, Object> event, MessageCollector collector) {
+    private void handleRideRequest(Map<String, Object> event, MessageCollector collector) throws IOException {
         int userId = (Integer) event.get("userId");
         Map<String, Object> user = userInfo.get(userId);
 
@@ -211,8 +214,12 @@ public class AdMatchTask implements StreamTask, InitableTask {
             }
         }
         if (bestMatch != null) {
+            Map<String,Object> output = new HashMap<>();
+            output.put("userId", userId);
+            output.put("storeId",bestMatch.get("storeId"));
+            output.put("name", bestMatch.get("name"));
             collector.send(new OutgoingMessageEnvelope(AdMatchConfig.AD_STREAM,
-                    Map.of("userId", userId, "storeId", bestMatch.get("storeId"), "name", bestMatch.get("name"))));
+                    mapper.readTree(mapper.writeValueAsString(output))));
         }
 
     }
