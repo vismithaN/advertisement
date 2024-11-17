@@ -181,6 +181,8 @@ public class AdMatchTask implements StreamTask, InitableTask {
         String userInterest = (String) user.get("interest");
         String device = (String) user.get("device");
 
+        System.out.println("UserTags " + userTags);
+
 
         KeyValueIterator<String,Map<String,Object>> iterator = yelpInfo.all();
 
@@ -327,7 +329,7 @@ public class AdMatchTask implements StreamTask, InitableTask {
         if (active == 3) tags.add("willingTour");
         if (stress > 5 || active == 1 || mood < 4) tags.add("stressRelease");
         if (mood > 6) tags.add("happyChoice");
-        else tags.add("others");
+        if(tags.isEmpty()) tags.add("others");
 
         return tags;
     }
