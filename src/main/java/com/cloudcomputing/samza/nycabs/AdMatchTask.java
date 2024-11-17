@@ -233,11 +233,12 @@ public class AdMatchTask implements StreamTask, InitableTask {
 
     }
 
-    private double distanceAgeMatch(Map<String, Object> store, Map<String, Object> user, double score) {
+    private double distanceAgeMatch(Map<String, Object> store, Map<String, Object> user,
+                                    Map<String, Object> event, double score) {
         int travelCount = (Integer) user.get("travel_count");
         int age = (Integer) user.get("age");
         double distance = calculateDistance((Double) store.get("latitude"), (Double) store.get("longitude"),
-                (Double) user.get("latitude"), (Double) user.get("longitude"));
+                (Double) event.get("latitude"), (Double) event.get("longitude"));
 
         if((travelCount > 50 || age == 20) && distance > 10)
             score *= 0.1;
