@@ -2,6 +2,7 @@ package com.cloudcomputing.samza.nycabs;
 
 import com.google.common.io.Resources;
 import org.apache.samza.context.Context;
+import org.apache.samza.storage.kv.KeyValueIterator;
 import org.apache.samza.storage.kv.KeyValueStore;
 import org.apache.samza.system.IncomingMessageEnvelope;
 import org.apache.samza.system.OutgoingMessageEnvelope;
@@ -35,6 +36,8 @@ public class AdMatchTask implements StreamTask, InitableTask {
     private KeyValueStore<Integer, Map<String, Object>> userInfo;
 
     private KeyValueStore<String, Map<String, Object>> yelpInfo;
+
+    private final static Integer DURATION_MILLI = 5 * 60 * 1000;
 
     private Set<String> lowCalories;
 
@@ -146,12 +149,172 @@ public class AdMatchTask implements StreamTask, InitableTask {
         into the same reducer.
         */
         String incomingStream = envelope.getSystemStreamPartition().getStream();
+        Map<String,Object> event = (Map<String, Object>)envelope.getMessage();
 
         if (incomingStream.equals(AdMatchConfig.EVENT_STREAM.getStream())) {
             // Handle Event messages
-
+            String type = event.get("type").toString();
+            if ("RIDER_STATUS".equals(type)) {
+                handleRiderStatus(event);
+            } else if ("RIDER_INTEREST".equals(type)) {
+                handleRiderInterest(event);
+            } else if ("RIDE_REQUEST".equals(type)) {
+                handleRideRequest(event, collector);
+            }
         } else {
             throw new IllegalStateException("Unexpected input stream: " + envelope.getSystemStreamPartition());
         }
     }
+
+    private void handleRideRequest(Map<String, Object> event, MessageCollector collector) {
+        int userId = (Integer) event.get("userId");
+        Map<String, Object> user = userInfo.get(userId);
+
+        if (user == null) return;
+        double maxScore = Double.MIN_VALUE;
+        Map<String, Object> bestMatch = null;
+
+        Set<String> userTags = (Set<String>) user.get("tags");
+        String userInterest = (String) user.get("interest");
+        String device = (String) user.get("device");
+
+
+        KeyValueIterator<String,Map<String,Object>> iterator = yelpInfo.all();
+
+        while(iterator.hasNext()) {
+            Map<String, Object> store = iterator.next().getValue();
+
+            //Tags match
+            String storeTag = (String) store.get("tag");
+            if (!userTags.contains(storeTag)) continue;
+
+            // Initial Score
+            double score = (Integer) store.get("review_count") * (Double) store.get("rating");
+
+            //User Interest and Store Category Match
+            if (store.get("categories").equals(userInterest)) {
+                score += 10;
+            }
+
+            //Price and Device match
+            int priceValue = getPriceValue((String) store.get("price"));
+            int deviceValue = getDeviceValue(device);
+            score *= (1 - Math.abs(priceValue - deviceValue) * 0.1);
+
+            //Distance and Age match
+            score = distanceAgeMatch(store, user, score);
+
+            //update max score
+            if (score > maxScore) {
+                maxScore = score;
+                bestMatch = store;
+            }
+        }
+        if (bestMatch != null) {
+            collector.send(new OutgoingMessageEnvelope(AdMatchConfig.AD_STREAM,
+                    Map.of("userId", userId, "storeId", bestMatch.get("storeId"), "name", bestMatch.get("name"))));
+        }
+
+    }
+
+    private double distanceAgeMatch(Map<String, Object> store, Map<String, Object> user, double score) {
+        int travelCount = (Integer) user.get("travel_count");
+        int age = (Integer) user.get("age");
+        double distance = calculateDistance((Double) store.get("latitude"), (Double) store.get("longitude"),
+                (Double) user.get("latitude"), (Double) user.get("longitude"));
+
+        if((travelCount > 50 || age == 20) && distance > 10)
+            score *= 0.1;
+        else if ((travelCount <= 50 && age > 20) && distance > 5)
+            score *= 0.1;
+
+        return score;
+    }
+
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        if ((lat1 == lat2) && (lon1 == lon2)) {
+            return 0;
+        } else {
+            double theta = lon1 - lon2;
+            double dist = Math.sin(Math.toRadians(lat1)) * Math.sin(Math.toRadians(lat2)) + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.cos(Math.toRadians(theta));
+            dist = Math.acos(dist);
+            dist = Math.toDegrees(dist);
+            dist = dist * 60 * 1.1515;
+            return (dist);
+        }
+    }
+
+    private int getPriceValue(String price) {
+        return switch (price) {
+            case "$$$$", "$$$" -> 3;
+            case "$$" -> 2;
+            case "$" -> 1;
+            default -> 0;
+        };
+    }
+
+    private int getDeviceValue(String device) {
+        return switch (device) {
+            case "iPhone XS" -> 3;
+            case "iPhone 7" -> 2;
+            case "iPhone 5" -> 1;
+            default -> 0;
+        };
+    }
+
+
+
+
+    private void handleRiderInterest(Map<String, Object> event) {
+        int userId = (Integer) event.get("userId");
+        Map<String,Object> userProfile =  userInfo.get(userId);
+        if (userProfile == null) return;
+
+        //Update only of Duration > 5sec
+        int duration = (Integer) event.get("duration");
+        if (duration > DURATION_MILLI) {
+            userProfile.put("interest", event.get("interest"));
+            userInfo.put(userId, userProfile);
+        }
+    }
+
+
+    private void handleRiderStatus(Map<String, Object> event) {
+        int userId = (Integer) event.get("userId");
+        Map<String,Object> user =  userInfo.get(userId);
+        if (user == null) return;
+
+        // Create tags
+        Set<String> tags = getUserTag(event);
+
+        //Update user's profile
+        user.put("mood", event.get("mood"));
+        user.put("blood_sugar", event.get("blood_sugar"));
+        user.put("stress", event.get("stress"));
+        user.put("active", event.get("active"));
+        user.put("tags", tags);
+
+        userInfo.put(userId, user);
+    }
+
+    private Set<String> getUserTag(Map<String,Object> event) {
+        Set<String> tags = new HashSet<>();
+
+        int mood = (Integer) event.get("mood");
+        int bloodSugar = (Integer) event.get("blood_sugar");
+        int stress = (Integer) event.get("stress");
+        int active = (Integer) event.get("active");
+
+        if (bloodSugar > 4 && mood > 6 && active == 3) tags.add("lowCalories");
+        if (bloodSugar < 2 || mood < 4) tags.add("energyProviders");
+        if (active == 3) tags.add("willingTour");
+        if (stress > 5 || active == 1 || mood < 4) tags.add("stressRelease");
+        if (mood > 6) tags.add("happyChoice");
+        else tags.add("others");
+
+        return tags;
+    }
+
+
+
 }
