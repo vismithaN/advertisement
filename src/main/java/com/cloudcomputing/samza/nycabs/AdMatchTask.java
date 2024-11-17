@@ -214,7 +214,7 @@ public class AdMatchTask implements StreamTask, InitableTask {
             score *= (1 - Math.abs(priceValue - deviceValue) * 0.1);
 
             //Distance and Age match
-            score = distanceAgeMatch(store, user, score);
+            score = distanceAgeMatch(store, user, event,score);
 
             //update max score
             if (score > maxScore) {
