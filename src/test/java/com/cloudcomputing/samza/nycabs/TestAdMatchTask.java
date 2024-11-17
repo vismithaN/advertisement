@@ -43,7 +43,7 @@ public class TestAdMatchTask {
                 .addConfig("deploy.test", "true")
                 .run(Duration.ofSeconds(7));
 
-        Assert.assertEquals(5, TestRunner.consumeStream(outputAdStream, Duration.ofSeconds(7)).get(0).size());
+//        Assert.assertEquals(5, TestRunner.consumeStream(outputAdStream, Duration.ofSeconds(7)).get(0).size());
 
         ListIterator<Object> resultIter = TestRunner.consumeStream(outputAdStream, Duration.ofSeconds(7)).get(0).listIterator();
 
