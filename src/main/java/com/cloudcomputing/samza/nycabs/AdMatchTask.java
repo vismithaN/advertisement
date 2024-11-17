@@ -1,7 +1,6 @@
 package com.cloudcomputing.samza.nycabs;
 
 import com.google.common.io.Resources;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.samza.context.Context;
 import org.apache.samza.storage.kv.KeyValueIterator;
 import org.apache.samza.storage.kv.KeyValueStore;
@@ -39,7 +38,7 @@ public class AdMatchTask implements StreamTask, InitableTask {
 
     private KeyValueStore<String, Map<String, Object>> yelpInfo;
 
-    private final static Integer DURATION_MILLI = 5 * 60 * 1000;
+    private final Integer DURATION_MILLI = 5 * 60 * 1000;
 
     private final  ObjectMapper mapper = new ObjectMapper();
 
@@ -115,11 +114,6 @@ public class AdMatchTask implements StreamTask, InitableTask {
             ObjectMapper mapper = new ObjectMapper();
             try {
                 mapResult = mapper.readValue(rawString, HashMap.class);
-//                mapResult.put("interest", StringUtils.EMPTY);
-//                mapResult.put("mood", -1);
-//                mapResult.put("blood_sugar", -1);
-//                mapResult.put("stress", -1);
-//                mapResult.put("active", -1);
                 mapResult.put("tags", getUserTag(mapResult));
 
                 int userId = (Integer) mapResult.get("userId");
@@ -193,7 +187,7 @@ public class AdMatchTask implements StreamTask, InitableTask {
 
         KeyValueIterator<String,Map<String,Object>> iterator = yelpInfo.all();
 
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             Map<String, Object> store = iterator.next().getValue();
 
             //Tags match
@@ -255,10 +249,11 @@ public class AdMatchTask implements StreamTask, InitableTask {
         double distance = calculateDistance((Double) store.get("latitude"), (Double) store.get("longitude"),
                 (Double) event.get("latitude"), (Double) event.get("longitude"));
 
-        if((travelCount > 50 || age == 20) && distance > 10)
+        if ((travelCount > 50 || age == 20) && distance > 10) {
             score *= 0.1;
-        else if ((travelCount <= 50 && age > 20) && distance > 5)
+        } else if ((travelCount <= 50 && age > 20) && distance > 5) {
             score *= 0.1;
+        }
 
         return score;
     }
