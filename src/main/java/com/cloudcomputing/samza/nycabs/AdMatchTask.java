@@ -245,21 +245,31 @@ public class AdMatchTask implements StreamTask, InitableTask {
     }
 
     private int getPriceValue(String price) {
-        return switch (price) {
-            case "$$$$", "$$$" -> 3;
-            case "$$" -> 2;
-            case "$" -> 1;
-            default -> 0;
-        };
+        switch (price) {
+            case "$$$$":
+            case "$$$":
+                return 3;
+            case "$$":
+                return 2;
+            case "$":
+                return 1;
+            default:
+                return 0;
+        }
     }
 
     private int getDeviceValue(String device) {
-        return switch (device) {
-            case "iPhone XS" -> 3;
-            case "iPhone 7" -> 2;
-            case "iPhone 5" -> 1;
-            default -> 0;
-        };
+        switch (device) {
+            case "iPhone XS":
+                return 3;
+            case "iPhone 7":
+                return 2;
+            case "iPhone 5":
+                return 1;
+            default:
+                return 0;
+        }
+
     }
 
 
