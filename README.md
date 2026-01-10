@@ -210,7 +210,24 @@ advertisement/
 ```
 
 ### Event Schema
-Events consumed from the `events` Kafka topic (schema to be defined based on implementation).
+Events consumed from the `events` Kafka topic typically contain user activity data. Example structure:
+```json
+{
+  "userId": 0,
+  "blockId": 45,
+  "latitude": 40.7799,
+  "longitude": -73.9802,
+  "timestamp": 1234567890,
+  "eventType": "location_update"
+}
+```
+
+The event structure should include:
+- `userId`: User identifier for matching with user profile
+- `blockId`: Geographic block identifier for location-based matching
+- `latitude`/`longitude`: GPS coordinates for proximity calculations
+- `timestamp`: Event timestamp
+- `eventType`: Type of event (location_update, interaction, etc.)
 
 ### Advertisement Output Schema
 Matched advertisements published to `ad-stream` Kafka topic containing:
@@ -376,7 +393,7 @@ The system matches advertisements based on several factors:
 ### Category Tags
 
 - **lowCalories**: seafood, vegetarian, vegan, sushi
-- **energyProviders**: bakeries, ramen, donuts, burgers, bagels, pizza, sandwiches, icecream, desserts, bbq, dimsum, steak
+- **energyProviders**: bakeries, ramen, donuts, burgers, bagels, pizza, sandwiches, ice cream, desserts, bbq, dimsum, steak
 - **willingTour**: parks, museums, newamerican, landmarks
 - **stressRelease**: coffee, bars, wine_bars, cocktailbars, lounges
 - **happyChoice**: italian, thai, cuban, japanese, mideastern, cajun, tapas, breakfast_brunch, korean, mediterranean, vietnamese, indpak, southern, latin, greek, mexican, asianfusion, spanish, chinese
