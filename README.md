@@ -98,10 +98,10 @@ This system processes real-time user events and matches them with appropriate ad
 - **Fault Tolerance**: State management with RocksDB and Kafka changelog topics
 - **Category-based Tagging**: Businesses categorized into five main groups:
   - `lowCalories`: seafood, vegetarian, vegan, sushi
-  - `energyProviders`: bakeries, ramen, donuts, burgers, bagels, pizza, sandwiches, ice cream, desserts, bbq, dimsum, steak
-  - `willingTour`: parks, museums, newamerican, landmarks
-  - `stressRelease`: coffee, bars, wine_bars, cocktailbars, lounges
-  - `happyChoice`: italian, thai, cuban, japanese, mideastern, cajun, tapas, breakfast_brunch, korean, mediterranean, vietnamese, indpak, southern, latin, greek, mexican, asianfusion, spanish, chinese
+  - `energyProviders`: bakeries, ramen, donuts, burgers, bagels, pizza, sandwiches, ice cream, desserts, bbq, dim sum, steak
+  - `willingTour`: parks, museums, New American, landmarks
+  - `stressRelease`: coffee, bars, wine bars, cocktail bars, lounges
+  - `happyChoice`: Italian, Thai, Cuban, Japanese, Middle Eastern, Cajun, tapas, breakfast brunch, Korean, Mediterranean, Vietnamese, Indian/Pakistani, Southern, Latin, Greek, Mexican, Asian fusion, Spanish, Chinese
 
 ## System Components
 
@@ -392,11 +392,13 @@ The system matches advertisements based on several factors:
 
 ### Category Tags
 
+The following category tags are used in the code for business classification. The values shown here are formatted for readability; actual code values may use different casing/spacing (e.g., `icecream`, `dimsum`, `newamerican`, `indpak`, `asianfusion`).
+
 - **lowCalories**: seafood, vegetarian, vegan, sushi
-- **energyProviders**: bakeries, ramen, donuts, burgers, bagels, pizza, sandwiches, ice cream, desserts, bbq, dimsum, steak
-- **willingTour**: parks, museums, newamerican, landmarks
-- **stressRelease**: coffee, bars, wine_bars, cocktailbars, lounges
-- **happyChoice**: italian, thai, cuban, japanese, mideastern, cajun, tapas, breakfast_brunch, korean, mediterranean, vietnamese, indpak, southern, latin, greek, mexican, asianfusion, spanish, chinese
+- **energyProviders**: bakeries, ramen, donuts, burgers, bagels, pizza, sandwiches, ice cream, desserts, bbq, dim sum, steak
+- **willingTour**: parks, museums, New American, landmarks
+- **stressRelease**: coffee, bars, wine bars, cocktail bars, lounges
+- **happyChoice**: Italian, Thai, Cuban, Japanese, Middle Eastern, Cajun, tapas, breakfast brunch, Korean, Mediterranean, Vietnamese, Indian/Pakistani, Southern, Latin, Greek, Mexican, Asian fusion, Spanish, Chinese
 
 ## References
 
