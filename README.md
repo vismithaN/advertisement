@@ -96,12 +96,12 @@ This system processes real-time user events and matches them with appropriate ad
   - Blood sugar levels
 - **Scalable Architecture**: Distributed processing on YARN cluster
 - **Fault Tolerance**: State management with RocksDB and Kafka changelog topics
-- **Category-based Tagging**: Businesses categorized into:
+- **Category-based Tagging**: Businesses categorized into five main groups:
   - `lowCalories`: seafood, vegetarian, vegan, sushi
-  - `energyProviders`: bakeries, ramen, donuts, burgers, pizza, etc.
-  - `willingTour`: parks, museums, landmarks
-  - `stressRelease`: coffee, bars, wine bars, cocktail bars
-  - `happyChoice`: international cuisines (Italian, Thai, Japanese, etc.)
+  - `energyProviders`: bakeries, ramen, donuts, burgers, bagels, pizza, sandwiches, ice cream, desserts, bbq, dimsum, steak
+  - `willingTour`: parks, museums, newamerican, landmarks
+  - `stressRelease`: coffee, bars, wine_bars, cocktailbars, lounges
+  - `happyChoice`: italian, thai, cuban, japanese, mideastern, cajun, tapas, breakfast_brunch, korean, mediterranean, vietnamese, indpak, southern, latin, greek, mexican, asianfusion, spanish, chinese
 
 ## System Components
 
@@ -424,4 +424,4 @@ For issues or questions:
 
 ---
 
-**Note**: This is an educational project demonstrating real-time stream processing with Apache Samza. The matching algorithm is a simplified example and should be enhanced with more sophisticated ML models for production use.
+**Note**: This is an educational project demonstrating real-time stream processing with Apache Samza. The matching algorithm is a simplified example and should be enhanced with more sophisticated machine learning models for production use.
